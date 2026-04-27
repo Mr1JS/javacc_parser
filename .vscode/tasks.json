@@ -1,0 +1,45 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Generate Parser",
+            "type": "shell",
+            "command": "/Applications/javacc/scripts/javacc",
+            "args": [
+                "-OUTPUT_DIRECTORY=gen",
+                "src/Parser.jj"
+            ],
+            "group": "build"
+        },
+        {
+            "label": "Compile Java",
+            "type": "shell",
+            "command": "javac",
+            "args": [
+                "-d",
+                "out",
+                "gen/*.java"
+            ],
+            "group": "build"
+        },
+        {
+            "label": "Run Parser",
+            "type": "shell",
+            "command": "java",
+            "args": [
+                "-cp",
+                "out",
+                "Parser"
+            ],
+            "group": "test"
+        },
+        {
+            "label": "Build & Run",
+            "dependsOn": [
+                "Generate Parser",
+                "Compile Java",
+                "Run Parser"
+            ]
+        }
+    ]
+}
