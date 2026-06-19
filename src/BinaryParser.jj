@@ -1,0 +1,122 @@
+/**
+ * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
+ */
+options
+{
+  static = true;
+  DEBUG_PARSER = false;
+  OUTPUT_DIRECTORY = "genParser"; 
+}
+
+PARSER_BEGIN(BinaryParser)
+
+package genParser;
+public class BinaryParser
+{
+  public static void main(String args []) throws ParseException
+  {
+    BinaryParser parser = new BinaryParser(System.in);
+    boolean keepRunning = true;
+    while (keepRunning)
+    {
+      System.out.println("Reading from standard input...");
+      System.out.print("Enter a binary number like \"0011011;\" :");
+      try
+      {
+        switch (BinaryParser.start())
+        {
+          case 0 : 
+          System.out.println("OK.");
+          break;
+          case 1 : 
+          System.out.println("Goodbye.");
+          keepRunning = false;
+          break;
+          default : 
+          break;
+        }
+      }
+      catch (Exception e)
+      {
+        System.out.println("NOK.");
+        System.out.println(e.getMessage());
+        BinaryParser.ReInit(System.in);
+      }
+      catch (Error e)
+      {
+        System.out.println("Oops.");
+        System.out.println(e.getMessage());
+        break;
+      }
+    }
+  }
+}
+
+PARSER_END(BinaryParser)
+
+SKIP :
+{
+  " "
+| "\r"
+| "\t"
+| "\n"
+}
+
+
+// Programm beginnt hier:
+
+int start() :
+{}
+{
+  // Nutzer muss mit S anfangen den leeres wort ist nicht kleinste wort
+  // sondern die 00101;
+	S() ";"
+  {
+    return 0;
+  }
+| 	// Kein Eingabewort (nur ;) = Programmende
+	";"
+  {
+    return 1;
+  }
+}
+
+
+// ----
+// Äußere rekursion --> linke Seite für n
+// S --> 00B
+void S() :
+{}
+{
+  	"0" "0" B()
+}
+
+// Äußere rekursion --> rechte Seite für n und einestieg in die innere Rekursion
+// sichert n >= 1
+// B --> S1 | T1
+void B() :
+{}
+{
+    S() "1" |
+    T() "1"
+}
+
+
+// ---- 
+// Innnere rekursion --> linke Seite für m
+// T --> 1C
+void T() :
+{}
+{
+  	"1" C()
+}
+
+// Innnere rekursion --> rechte Seite für m und rekursionende mit 10 in die Mitte
+// C --> T1 | 0
+void C() :
+{}
+{
+  	T() "1"
+ |  "0"
+}
+
