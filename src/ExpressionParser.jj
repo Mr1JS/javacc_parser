@@ -1,0 +1,197 @@
+/**
+ * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
+ */
+options
+{
+  static = true;
+  DEBUG_PARSER = false;
+  OUTPUT_DIRECTORY = "genParser"; 
+}
+
+PARSER_BEGIN(ExpressionParser)
+
+package genParser;
+public class ExpressionParser
+{
+  public static void main(String args []) throws ParseException
+  {
+    ExpressionParser parser = new ExpressionParser(System.in);
+    boolean keepRunning = true;
+    while (keepRunning)
+    {
+      System.out.println("Reading from standard input...");
+      System.out.print("Enter a regex over {a,b,c}, e.g. \"a|bc*;\": ");
+      try
+      {
+        switch (ExpressionParser.start())
+        {
+          case 0 : 
+          System.out.println("OK.");
+          break;
+          case 1 : 
+          System.out.println("Goodbye.");
+          keepRunning = false;
+          break;
+          default : 
+          break;
+        }
+      }
+      catch (Exception e)
+      {
+        System.out.println("NOK.");
+        System.out.println(e.getMessage());
+        ExpressionParser.ReInit(System.in);
+      }
+      catch (Error e)
+      {
+        System.out.println("Oops.");
+        System.out.println(e.getMessage());
+        break;
+      }
+    }
+  }
+}
+
+PARSER_END(ExpressionParser)
+
+SKIP :
+{
+  " "
+| "\r"
+| "\t"
+| "\n"
+}
+
+int start() :
+{}
+{
+	// Fall 1: Eingabewort
+	S() <EOF>
+  {
+    return 0;
+  }
+| 	// Fall 2: Kein Eingabewort (nur ;) = Programmende
+	";"
+  {
+    return 1;
+  }
+}
+
+/* ================================================================
+   S   ->  Term S_
+   S_  ->  "+" Term S_  |  ε
+   ================================================================ */
+void S() :
+{}
+{
+  Term() S_()
+}
+
+void S_() :
+{}
+{
+  ( "+" Term() S_() )?
+}
+
+/* ================================================================
+   Term   ->  RoundGroup "." TermAtom Term_
+            | Atom Term_
+
+   RoundGroup darf nur am Anfang eines Terms stehen UND
+   es muss ZWINGEND ein "." danach folgen.
+
+   TermAtom ->  RoundGroup | Atom
+   (nach dem ersten "." darf wieder eine runde Klammer kommen)
+
+   Term_  ->  "." TermAtom Term_  |  ε
+   ================================================================ */
+void Term() :
+{}
+{
+  RoundGroup() "." TermAtom() Term_()
+| Atom() Term_()
+}
+
+void TermAtom() :
+{}
+{
+  RoundGroup()
+| Atom()
+}
+
+void Term_() :
+{}
+{
+  ( "." TermAtom() Term_() )?
+}
+
+/* ================================================================
+   RoundGroup  ->  "(" AltInner ")"
+   Alternative (mind. "+") in runden Klammern.
+   Erzwingt Praezedenzaenderung: Alt vor Konkat.
+   ================================================================ */
+void RoundGroup() :
+{}
+{
+  "(" AltInner() ")"
+}
+
+/* ================================================================
+   Atom  ->  "[" ConcatInner "]" "*"
+           | "{" AltInner   "}" "*"
+           | Symbol [ "*" ]
+   ================================================================ */
+void Atom() :
+{}
+{
+  "[" ConcatInner() "]" "*"
+| "{" AltInner()   "}" "*"
+| Symbol() [ "*" ]
+}
+
+/* ================================================================
+   Symbol  ->  "a" | "b" | "c"
+   ================================================================ */
+void Symbol() :
+{}
+{
+  "a" | "b" | "c"
+}
+
+/* ================================================================
+   ConcatInner: mind. ein "."  (Inhalt von [ ])
+   ================================================================ */
+void ConcatInner() :
+{}
+{
+  AtomInner() "." AtomInner() ( "." AtomInner() )*
+}
+
+/* ================================================================
+   AltInner: mind. ein "+"  (Inhalt von ( ) und { })
+   ================================================================ */
+void AltInner() :
+{}
+{
+  TermInner() "+" TermInner() ( "+" TermInner() )*
+}
+
+/* ================================================================
+   TermInner: Konkatenation innerhalb von Klammern
+   ================================================================ */
+void TermInner() :
+{}
+{
+  AtomInner() ( "." AtomInner() )*
+}
+
+/* ================================================================
+   AtomInner: Atom innerhalb von Klammern
+   "(" -> AltInner,  a/b/c -> Symbol  (kein Konflikt)
+   ================================================================ */
+void AtomInner() :
+{}
+{
+  "(" AltInner() ")"
+| Symbol() [ "*" ]
+}

@@ -41,65 +41,50 @@ public class BinaryParser implements BinaryParserConstants {
 
 // Programm beginnt hier:
   static final public int start() throws ParseException {
-    trace_call("start");
-    try {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 6:
-        S();
-        jj_consume_token(5);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case 6:
+      S();
+      jj_consume_token(5);
     {if (true) return 0;}
-        break;
-      case 5:
-        jj_consume_token(5);
+      break;
+    case 5:
+      jj_consume_token(5);
     {if (true) return 1;}
-        break;
-      default:
-        jj_la1[0] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("start");
+      break;
+    default:
+      jj_la1[0] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
     }
+    throw new Error("Missing return statement in function");
   }
 
 // ----
 // Äußere rekursion --> linke Seite für n
 // S --> 00B
   static final public void S() throws ParseException {
-    trace_call("S");
-    try {
-      jj_consume_token(6);
-      jj_consume_token(6);
-      B();
-    } finally {
-      trace_return("S");
-    }
+    jj_consume_token(6);
+    jj_consume_token(6);
+    B();
   }
 
 // Äußere rekursion --> rechte Seite für n und einestieg in die innere Rekursion
 // sichert n >= 1
 // B --> S1 | T1
   static final public void B() throws ParseException {
-    trace_call("B");
-    try {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 6:
-        S();
-        jj_consume_token(7);
-        break;
-      case 7:
-        T();
-        jj_consume_token(7);
-        break;
-      default:
-        jj_la1[1] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-    } finally {
-      trace_return("B");
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case 6:
+      S();
+      jj_consume_token(7);
+      break;
+    case 7:
+      T();
+      jj_consume_token(7);
+      break;
+    default:
+      jj_la1[1] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
     }
   }
 
@@ -107,35 +92,25 @@ public class BinaryParser implements BinaryParserConstants {
 // Innnere rekursion --> linke Seite für m
 // T --> 1C
   static final public void T() throws ParseException {
-    trace_call("T");
-    try {
-      jj_consume_token(7);
-      C();
-    } finally {
-      trace_return("T");
-    }
+    jj_consume_token(7);
+    C();
   }
 
 // Innnere rekursion --> rechte Seite für m und rekursionende mit 10 in die Mitte
 // C --> T1 | 0
   static final public void C() throws ParseException {
-    trace_call("C");
-    try {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 7:
-        T();
-        jj_consume_token(7);
-        break;
-      case 6:
-        jj_consume_token(6);
-        break;
-      default:
-        jj_la1[2] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-    } finally {
-      trace_return("C");
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case 7:
+      T();
+      jj_consume_token(7);
+      break;
+    case 6:
+      jj_consume_token(6);
+      break;
+    default:
+      jj_la1[2] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
     }
   }
 
@@ -252,7 +227,6 @@ public class BinaryParser implements BinaryParserConstants {
     jj_ntk = -1;
     if (token.kind == kind) {
       jj_gen++;
-      trace_token(token, "");
       return token;
     }
     token = oldToken;
@@ -267,7 +241,6 @@ public class BinaryParser implements BinaryParserConstants {
     else token = token.next = token_source.getNextToken();
     jj_ntk = -1;
     jj_gen++;
-      trace_token(token, " (in getNextToken)");
     return token;
   }
 
@@ -323,55 +296,12 @@ public class BinaryParser implements BinaryParserConstants {
     return new ParseException(token, exptokseq, tokenImage);
   }
 
-  static private int trace_indent = 0;
-  static private boolean trace_enabled = true;
-
-/** Enable tracing. */
+  /** Enable tracing. */
   static final public void enable_tracing() {
-    trace_enabled = true;
   }
 
-/** Disable tracing. */
+  /** Disable tracing. */
   static final public void disable_tracing() {
-    trace_enabled = false;
-  }
-
-  static private void trace_call(String s) {
-    if (trace_enabled) {
-      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
-      System.out.println("Call:   " + s);
-    }
-    trace_indent = trace_indent + 2;
-  }
-
-  static private void trace_return(String s) {
-    trace_indent = trace_indent - 2;
-    if (trace_enabled) {
-      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
-      System.out.println("Return: " + s);
-    }
-  }
-
-  static private void trace_token(Token t, String where) {
-    if (trace_enabled) {
-      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
-      System.out.print("Consumed token: <" + tokenImage[t.kind]);
-      if (t.kind != 0 && !tokenImage[t.kind].equals("\"" + t.image + "\"")) {
-        System.out.print(": \"" + t.image + "\"");
-      }
-      System.out.println(" at line " + t.beginLine + " column " + t.beginColumn + ">" + where);
-    }
-  }
-
-  static private void trace_scan(Token t1, int t2) {
-    if (trace_enabled) {
-      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
-      System.out.print("Visited token: <" + tokenImage[t1.kind]);
-      if (t1.kind != 0 && !tokenImage[t1.kind].equals("\"" + t1.image + "\"")) {
-        System.out.print(": \"" + t1.image + "\"");
-      }
-      System.out.println(" at line " + t1.beginLine + " column " + t1.beginColumn + ">; Expected token: <" + tokenImage[t2] + ">");
-    }
   }
 
 }
